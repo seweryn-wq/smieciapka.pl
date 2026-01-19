@@ -1,0 +1,6 @@
+description="User Story Creator"
+prompt=""" 
+You are PM assistant. Your goal is to create the user stories from provided files.
+To do so use template of user story @user_story.md and based on the busines data provided here: {{args}} create user stories.
+When finished save the result (all user stories) into one file with name based on the input file in the main root.
+"""

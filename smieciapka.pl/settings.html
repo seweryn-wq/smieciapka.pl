@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ustawienia - Harmonogram Odbioru Odpadów</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/icon-192x192.png">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: sans-serif;
+            background-color: #ffffff;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: #666;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .back-button:hover { color: #333; }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .settings-section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .settings-section h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+        .info-text {
+            text-align: justify;
+            line-height: 1.6;
+            font-size: 0.9em;
+        }
+        .contact-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .contact-link:hover { color: #333; }
+        .app-icon {
+            width: 96px;
+            height: 96px;
+            margin: 10px auto 20px;
+            display: block;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #218838;
+        }
+        .feedback-text {
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        /* The switch - the box around the slider */
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 60px;
+          height: 34px;
+        }
+
+        /* Hide default HTML checkbox */
+        .switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        /* The slider */
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          -webkit-transition: .4s;
+          transition: .4s;
+        }
+
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 26px;
+          width: 26px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          -webkit-transition: .4s;
+          transition: .4s;
+        }
+
+        input:checked + .slider {
+          background-color: #28a745;
+        }
+
+        input:focus + .slider {
+          box-shadow: 0 0 1px #28a745;
+        }
+
+        input:checked + .slider:before {
+          -webkit-transform: translateX(26px);
+          -ms-transform: translateX(26px);
+          transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+          border-radius: 34px;
+        }
+
+        .slider.round:before {
+          border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-button">← Powrót</a>
+
+    <div class="container">
+        <h1>Ustawienia</h1>
+
+        <!-- Settings Section -->
+        <div class="settings-section">
+            <h2>Wybierz lokalizację</h2>
+            <div class="setting-field">
+                <label for="town-select">Miejscowość:</label>
+                <select id="town-select">
+                    <option>Ładowanie...</option>
+                </select>
+            </div>
+            <div class="setting-field" id="street-selection-container" style="display: none; margin-top: 15px;">
+                <label for="street-select">Ulica:</label>
+                <select id="street-select"></select>
+            </div>
+            <button id="save-button" class="button">Zapisz i wróć</button>
+            <div id="save-feedback" class="feedback-text"></div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div class="settings-section">
+            <h2>Powiadomienia</h2>
+            <div class="setting-field" style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="notifications-toggle" style="margin-bottom: 0;">Włącz powiadomienia</label>
+                <label class="switch">
+                    <input type="checkbox" id="notifications-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <div id="notification-options" style="margin-top: 20px; opacity: 0.5; pointer-events: none;">
+                <div class="setting-field">
+                    <label for="notification-day">Dzień powiadomienia:</label>
+                    <select id="notification-day">
+                        <option value="0">W dniu odbioru</option>
+                        <option value="1" selected>1 dzień przed odbiorem</option>
+                        <option value="2">2 dni przed odbiorem</option>
+                        <option value="3">3 dni przed odbiorem</option>
+                    </select>
+                </div>
+                <div class="setting-field" style="margin-top: 15px;">
+                    <label for="notification-time">Godzina powiadomienia:</label>
+                    <input type="time" id="notification-time" value="09:00" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box;">
+                </div>
+            </div>
+             <div class="info-text" style="margin-top: 20px; font-size: 0.8em; text-align: left;">
+                <strong>Uwaga:</strong> Powiadomienia będą działać tylko w przypadku zapisania aplikacji na ekranie startowym telefonu. W przypadku telefonów iPhone funkcja jest dostępna od wersji iOS 16.4.
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="settings-section">
+            <h2>Informacje</h2>
+            <img src="assets/icon-512x512.png" alt="Logo aplikacji" class="app-icon">
+            <div class="info-text">
+                Niniejsza aplikacja powstała dla celów edukacyjnych i w oparciu o harmonogramy wywozu śmieci na rok 2025/2026 (ważne do listopada 2026) dostępne na stronie: <strong>odpady.piaseczno.eu.</strong>
+                <br><br>
+                Wybierz swoją miejscowość/ulicę w ustawieniach, aby zobaczyć poprawny harmonogram. Jeśli Twojej ulicy nie ma na liście to znaczy, że obejmuje ją harmonogram dla całej miejscowości. Korzystanie z aplikacji jest jednoczesną zgodą na zbieranie anonimowych, podstawowych informacji o odwiedzinach - dla celów statystycznych.
+                <br><br>
+                Aplikację można zapisac na pulpicie telefonu. W tym celu na Iphone w przegladarce Safari lub na Androidzie w Chrome należy w menu poszukać opcji "Dodaj do ekranu początkowego/pulpitu".
+            </div>
+            <a href="mailto:n2rage@gmail.com?subject=smieciapka.pl" class="contact-link">Kontakt</a>
+        </div>
+    </div>
+
+    <script>
+        const DEFS_URL = 'harmonogram-definicje.json';
+        const townSelect = document.getElementById('town-select');
+        const streetSelect = document.getElementById('street-select');
+        const streetContainer = document.getElementById('street-selection-container');
+        const saveButton = document.getElementById('save-button');
+        const saveFeedback = document.getElementById('save-feedback');
+
+        let definitions = null;
+
+        // --- Notification Elements ---
+        const notificationsToggle = document.getElementById('notifications-toggle');
+        const notificationOptions = document.getElementById('notification-options');
+        const notificationDaySelect = document.getElementById('notification-day');
+        const notificationTimeInput = document.getElementById('notification-time');
+
+
+        async function initializeSettings() {
+            try {
+                const response = await fetch(DEFS_URL);
+                if (!response.ok) throw new Error('Failed to load definitions');
+                definitions = await response.json();
+                
+                setupEventListeners();
+                populateTownSelector();
+                initializeNotificationSettings();
+
+            } catch (error) {
+                console.error('Error initializing settings:', error);
+                townSelect.innerHTML = '<option>Błąd ładowania</option>';
+            }
+        }
+
+        function populateTownSelector() {
+            const savedTown = localStorage.getItem('selectedTown');
+            const towns = Object.keys(definitions.miejscowosci).sort((a, b) => a.localeCompare(b));
+            
+            townSelect.innerHTML = ''; // Clear loading text
+            
+            const defaultOption = document.createElement('option');
+            defaultOption.value = "";
+            defaultOption.textContent = "Wybierz miejscowość...";
+            townSelect.appendChild(defaultOption);
+
+            towns.forEach(town => {
+                const option = document.createElement('option');
+                option.value = town;
+                option.textContent = town;
+                if (town === savedTown) {
+                    option.selected = true;
+                }
+                townSelect.appendChild(option);
+            });
+            
+            // Trigger change to load streets for the saved town
+            if (savedTown) {
+                townSelect.dispatchEvent(new Event('change'));
+            }
+        }
+
+        function setupEventListeners() {
+            townSelect.addEventListener('change', () => {
+                const selectedTown = townSelect.value;
+                const townData = definitions.miejscowosci[selectedTown];
+
+                streetContainer.style.display = 'none';
+                streetSelect.innerHTML = '';
+
+                if (townData && townData.streetRules) {
+                    populateStreetSelector(townData);
+                    streetContainer.style.display = 'block';
+                }
+            });
+
+            saveButton.addEventListener('click', () => {
+                const selectedTown = townSelect.value;
+                const selectedStreet = streetSelect.value;
+
+                if (!selectedTown) {
+                    showFeedback('Proszę wybrać miejscowość.', 'error');
+                    return;
+                }
+
+                localStorage.setItem('selectedTown', selectedTown);
+                
+                if (streetContainer.style.display === 'block' && selectedStreet) {
+                    localStorage.setItem('selectedStreet', selectedStreet);
+                } else {
+                    localStorage.removeItem('selectedStreet');
+                }
+                
+                showFeedback('Ustawienia zapisane!', 'success');
+                
+                // Redirect back to home page after a short delay
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            });
+        }
+        
+        function populateStreetSelector(townData) {
+            const savedStreet = localStorage.getItem('selectedStreet');
+            streetSelect.innerHTML = '';
+
+            const allStreets = townData.streetRules.flatMap(rule => rule.streets);
+            allStreets.sort((a, b) => a.localeCompare(b));
+
+            allStreets.forEach(street => {
+                const option = document.createElement('option');
+                option.value = street;
+                option.textContent = street;
+                if (street === savedStreet) {
+                    option.selected = true;
+                }
+                streetSelect.appendChild(option);
+            });
+            
+            const otherOption = document.createElement('option');
+            otherOption.value = 'Pozostałe';
+            otherOption.textContent = 'Mojej ulicy nie ma na liście';
+            // If the saved street is not in the list, or if "Pozostałe" was saved
+            if (savedStreet === 'Pozostałe' || (savedStreet && !allStreets.includes(savedStreet))) {
+                 otherOption.selected = true;
+            }
+            streetSelect.appendChild(otherOption);
+        }
+
+        function showFeedback(message, type) {
+            saveFeedback.textContent = message;
+            saveFeedback.style.color = type === 'success' ? 'green' : 'red';
+            setTimeout(() => {
+                saveFeedback.textContent = '';
+            }, 3000);
+        }
+
+        // --- Initialization ---
+        initializeSettings();
+
+        // --- Notifications Logic ---
+
+        function initializeNotificationSettings() {
+            // Load saved settings from localStorage
+            const enabled = localStorage.getItem('notificationsEnabled') === 'true';
+            const day = localStorage.getItem('notificationDay');
+            const time = localStorage.getItem('notificationTime');
+
+            if (day !== null) notificationDaySelect.value = day;
+            if (time !== null) notificationTimeInput.value = time;
+
+            // Set the toggle state and update UI accordingly
+            notificationsToggle.checked = enabled;
+            if (enabled && Notification.permission === 'granted') {
+                enableNotificationOptions();
+            } else {
+                disableNotificationOptions();
+            }
+
+            // Add event listeners for notification controls
+            notificationsToggle.addEventListener('change', handleNotificationToggle);
+            notificationDaySelect.addEventListener('change', () => {
+                localStorage.setItem('notificationDay', notificationDaySelect.value);
+                updateServiceWorkerRegistration();
+            });
+            notificationTimeInput.addEventListener('change', () => {
+                localStorage.setItem('notificationTime', notificationTimeInput.value);
+                updateServiceWorkerRegistration();
+            });
+        }
+
+        function enableNotificationOptions() {
+            notificationOptions.style.opacity = '1';
+            notificationOptions.style.pointerEvents = 'auto';
+        }
+
+        function disableNotificationOptions() {
+            notificationOptions.style.opacity = '0.5';
+            notificationOptions.style.pointerEvents = 'none';
+        }
+
+        async function handleNotificationToggle() {
+            if (notificationsToggle.checked) {
+                // Turning notifications ON
+                if (!('Notification' in window) || !('ServiceWorkerRegistration' in window)) {
+                    alert('Twoja przeglądarka nie wspiera powiadomień.');
+                    notificationsToggle.checked = false;
+                    return;
+                }
+
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    localStorage.setItem('notificationsEnabled', 'true');
+                    enableNotificationOptions();
+                    // Save initial values if not present
+                    if (localStorage.getItem('notificationDay') === null) {
+                         localStorage.setItem('notificationDay', notificationDaySelect.value);
+                    }
+                    if (localStorage.getItem('notificationTime') === null) {
+                         localStorage.setItem('notificationTime', notificationTimeInput.value);
+                    }
+                    updateServiceWorkerRegistration();
+                } else {
+                    alert('Nie udzielono zgody na powiadomienia. Funkcja pozostaje wyłączona.');
+                    notificationsToggle.checked = false;
+                    localStorage.setItem('notificationsEnabled', 'false');
+                    disableNotificationOptions();
+                    updateServiceWorkerRegistration();
+                }
+            } else {
+                // Turning notifications OFF
+                localStorage.setItem('notificationsEnabled', 'false');
+                disableNotificationOptions();
+                updateServiceWorkerRegistration();
+            }
+        }
+        
+        async function updateServiceWorkerRegistration() {
+            if (!navigator.serviceWorker.ready) {
+                console.log('Service worker not ready yet.');
+                return;
+            }
+            const registration = await navigator.serviceWorker.ready;
+            const enabled = localStorage.getItem('notificationsEnabled') === 'true';
+
+            if (enabled) {
+                console.log('Enabling notifications sync task.');
+                // Here you would typically register for periodic sync
+                // For now, we just send a message to the SW to let it know settings have changed.
+                registration.active.postMessage({
+                    type: 'settings-updated',
+                    settings: {
+                        enabled: true,
+                        day: localStorage.getItem('notificationDay'),
+                        time: localStorage.getItem('notificationTime'),
+                        town: localStorage.getItem('selectedTown'),
+                        street: localStorage.getItem('selectedStreet')
+                    }
+                });
+            } else {
+                console.log('Disabling notifications sync task.');
+                 registration.active.postMessage({ type: 'settings-updated', settings: { enabled: false } });
+                // Here you would unregister periodic sync
+            }
+        }
+    </script>
+</body>
+</html>

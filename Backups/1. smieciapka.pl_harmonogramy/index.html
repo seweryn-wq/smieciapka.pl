@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KRZE8JPFWC"></script>
+<script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+(t?"":a)),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group identify setPersonProperties setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags resetGroups onFeatureFlags addFeatureFlagsHandler onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_UzC9KRutGT20jzRMgsQRmjQZDp1sdqhTjNMxFDUGvXA', {
+        api_host: 'https://eu.i.posthog.com',
+        defaults: '2025-11-30'
+    })
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KRZE8JPFWC');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonogram Odbioru Odpadów</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/icon-192x192.png">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+        body {
+            margin: 0;
+            padding: 90px 20px 90px; /* Adjusted padding-top for fixed header, padding-bottom for fixed footer */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            background-color: #ffffff; /* White background for content area */
+            flex-grow: 1; /* Allow content to grow and push footer down */
+            padding: 20px 0; /* Add some vertical padding inside the container */
+        }
+
+        .today-text, .tomorrow-text {
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+
+        .waste-icons {
+            display: flex;
+            flex-direction: row; /* Changed from column to row */
+            flex-wrap: wrap; /* Added to wrap items if more than one row is needed */
+            justify-content: center; /* Center items horizontally */
+            align-items: center; /* Keep items aligned vertically (if they have different heights) */
+            gap: 20px; /* Keep existing gap for now */
+            margin-bottom: 30px;
+        }
+
+        .waste-icon {
+            width: 210px; /* Default size for single icon */
+            height: 255px; /* Default size for single icon */
+            object-fit: contain;
+        }
+
+        .waste-icon--multiple { /* New class for multiple icons */
+            max-width: calc(50% - 10px); /* Adjusted for gap of 20px (10px on each side) */
+            height: 150px; /* Smaller height for multiple icons */
+            width: auto; /* Allow width to scale with max-width */
+        }
+
+        .section-container {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .info-link {
+            width: 24px;
+            height: 24px;
+            background-color: #f0f0f0;
+            border: 2px solid #666;
+            border-radius: 50%;
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px auto 0;
+        }
+
+        .info-link:hover {
+            background-color: #666;
+            color: #fff;
+        }
+
+        #city-name-header {
+            font-size: 1.5em;
+            margin: 0 0 5px; /* Reset margins, add small bottom margin */
+            color: #333;
+        }
+
+        #street-name-display {
+            font-size: 1em;
+            margin: 0; /* Reset all margins */
+            color: #555;
+        }
+
+        #location-display-box {
+            position: fixed; /* Make it sticky */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f0f0f0; /* Grey background */
+            border-bottom: 2px solid #28a745; /* Green line at the bottom */
+            padding: 10px 15px; /* Add some padding around the text */
+            z-index: 999; /* Ensure it stays on top */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+        .actions-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 15px 0; /* Add padding to the container */
+            background-color: #f0f0f0; /* Match body background */
+            border-top: 2px solid #28a745; /* Green line at the top */
+            z-index: 999; /* Ensure it stays on top */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+        .icon-button {
+            width: 48px;
+            height: 48px;
+            background-color: #f0f0f0;
+            border: 2px solid #28a745; /* Change border to green */
+            border-radius: 50%;
+            color: #28a745; /* Change icon color to green */
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .icon-button:hover {
+            background-color: #28a745; /* Change hover background to green */
+            color: #fff;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .modal-header h2 {
+            margin: 0;
+        }
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+        }
+        .modal-body {
+            padding-top: 15px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 480px) {
+            .waste-icon {
+                width: 170px;
+                height: 206px;
+            }
+            .waste-icon--multiple {
+                max-width: calc(50% - 10px); /* Adjust for smaller screens */
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="location-display-box">
+            <h1 id="city-name-header"></h1>
+            <p id="street-name-display"></p>
+        </div>
+        <div class="section-container">
+            <div class="today-text">
+                Dzisiaj (<span id="todayDate"></span>) odbierają:
+            </div>
+            <div id="todayWasteIcons" class="waste-icons"></div>
+        </div>
+        <div class="section-container">
+            <div class="tomorrow-text">
+                Jutro (<span id="tomorrowDate"></span>) odbierają:
+            </div>
+            <div id="tomorrowWasteIcons" class="waste-icons"></div>
+        </div>
+        <div class="actions-container">
+            <a href="#" id="full-schedule-btn" class="icon-button">📅</a>
+            <a href="#" id="segregation-info-btn" class="icon-button">🔍</a>
+            <a href="settings.html" class="icon-button">⚙️</a>
+        </div>
+    </div>
+
+    <!-- Full Schedule Modal -->
+    <div id="full-schedule-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Pełny harmonogram</h2>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div id="full-schedule-body" class="modal-body">
+                <!-- Schedule will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => console.log('ServiceWorker registration successful'))
+                    .catch(err => console.log('ServiceWorker registration failed: ', err));
+            });
+        }
+
+        const DEFS_URL = 'harmonogram-definicje.json';
+        const SCHEDULES_DIR = 'harmonograms/';
+        
+        // Define waste categories globally, as they are consistent across schedules.
+        const WASTE_CATEGORIES = {
+            "zmieszane": { "name": "Odpady zmieszane", "icon": "assets/zmieszane.png" },
+            "bio": { "name": "Odpady BIO", "icon": "assets/bio.png" },
+            "papier": { "name": "Papier", "icon": "assets/papier.png" },
+            "szklo": { "name": "Szkło", "icon": "assets/szklo.png" },
+            "sztuczne": { "name": "Metale i tworzywa sztuczne", "icon": "assets/sztuczne.png" },
+            "gabaryty": { "name": "Odpady wielkogabarytowe", "icon": "assets/gabaryty.png" },
+            "choinki": { "name": "Choinki", "icon": "assets/choinki.png" }
+        };
+
+        let scheduleDefinitions = null;
+        let scheduleData = null;
+        let selectedTown = null;
+
+        const cityNameHeader = document.getElementById('city-name-header');
+        const streetNameDisplay = document.getElementById('street-name-display');
+
+        // --- Data Loading and Logic ---
+
+        async function loadDefinitions() {
+            try {
+                const response = await fetch(DEFS_URL);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                scheduleDefinitions = await response.json();
+            } catch (error) {
+                console.error('Critical Error: Could not load schedule definitions.', error);
+            }
+        }
+
+        function getScheduleIdForLocation(town, street) {
+            if (!scheduleDefinitions || !scheduleDefinitions.miejscowosci) {
+                console.error("Schedule definitions not loaded.");
+                return null;
+            }
+            const townData = scheduleDefinitions.miejscowosci[town];
+            if (!townData) return null;
+
+            if (street && townData.streetRules) {
+                const normalizedStreet = street.trim().toLowerCase();
+                for (const rule of townData.streetRules) {
+                    if (rule.streets.find(s => s.trim().toLowerCase().startsWith(normalizedStreet))) {
+                        return rule.scheduleId;
+                    }
+                }
+            }
+            // Fallback to default if street is not in any rule or not provided
+            return townData.defaultScheduleId;
+        }
+
+        async function loadSchedule(scheduleId) {
+            if (!scheduleId) {
+                 console.error("Cannot load schedule: scheduleId is null.");
+                 return null;
+            }
+            try {
+                const response = await fetch(`${SCHEDULES_DIR}${scheduleId}.json`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error(`Error loading schedule file ${scheduleId}.json:`, error);
+                return null;
+            }
+        }
+
+        // --- UI and Display Logic ---
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return `${day}/${month}`;
+        }
+        
+        function dateToISOString(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function getWasteForDate(schedule, date) {
+            if (!schedule || !schedule.dates) return [];
+            
+            const dateString = dateToISOString(date);
+            const wasteTypes = [];
+
+            for (const [category, dates] of Object.entries(schedule.dates)) {
+                if (Array.isArray(dates) && dates.includes(dateString)) {
+                    if (WASTE_CATEGORIES[category]) {
+                        wasteTypes.push({
+                            type: category,
+                            name: WASTE_CATEGORIES[category].name,
+                            icon: WASTE_CATEGORIES[category].icon
+                        });
+                    }
+                }
+            }
+            return wasteTypes;
+        }
+
+
+        function displayWasteIcons(containerId, wasteTypes) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            if (wasteTypes.length === 0) {
+                const img = document.createElement('img');
+                img.src = 'assets/brak.png';
+                img.alt = 'Brak odbioru';
+                img.className = 'waste-icon';
+                container.appendChild(img);
+            } else {
+                wasteTypes.forEach(waste => {
+                    const img = document.createElement('img');
+                    img.src = waste.icon;
+                    img.alt = waste.name;
+                    // Add a class for multiple icons to allow different scaling
+                    img.className = (wasteTypes.length > 1) ? 'waste-icon waste-icon--multiple' : 'waste-icon';
+                    container.appendChild(img);
+                });
+            }
+        }
+
+        function renderPage() {
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            document.getElementById('todayDate').textContent = formatDate(today);
+            document.getElementById('tomorrowDate').textContent = formatDate(tomorrow);
+            
+            if (!scheduleData || !selectedTown) {
+                const defaultText = selectedTown ? 'Błąd ładowania harmonogramu.' : 'Wybierz lokalizację w ustawieniach.';
+                cityNameHeader.textContent = selectedTown || 'Brak lokalizacji';
+                streetNameDisplay.textContent = ''; // Clear street name if no town or schedule
+                document.getElementById('todayWasteIcons').innerHTML = `<p>${defaultText}</p>`;
+                document.getElementById('tomorrowWasteIcons').innerHTML = '';
+                return;
+            }
+
+            cityNameHeader.textContent = selectedTown;
+            
+            const selectedStreet = localStorage.getItem('selectedStreet');
+            if (selectedStreet && selectedStreet !== 'Pozostałe') {
+                streetNameDisplay.textContent = selectedStreet;
+            } else {
+                streetNameDisplay.textContent = '';
+            }
+
+            const todayWaste = getWasteForDate(scheduleData, today);
+            displayWasteIcons('todayWasteIcons', todayWaste);
+
+            const tomorrowWaste = getWasteForDate(scheduleData, tomorrow);
+            displayWasteIcons('tomorrowWasteIcons', tomorrowWaste);
+        }
+
+        // --- Modal Logic ---
+
+        const modal = document.getElementById('full-schedule-modal');
+        const openModalBtn = document.getElementById('full-schedule-btn');
+        const closeModalBtn = document.querySelector('.modal .close-btn');
+
+        function generateFullScheduleHTML() {
+            if (!scheduleData || !scheduleData.dates) return '<p>Brak danych do wyświetlenia.</p>';
+
+            const allEvents = [];
+            for (const [category, dates] of Object.entries(scheduleData.dates)) {
+                if (WASTE_CATEGORIES[category]) {
+                    dates.forEach(dateStr => {
+                        allEvents.push({ date: new Date(dateStr), name: WASTE_CATEGORIES[category].name });
+                    });
+                }
+            }
+
+            allEvents.sort((a, b) => a.date - b.date);
+
+            let html = '<ul style="list-style: none; padding-left: 0;">';
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const weekdays = ['Niedz.', 'Pon.', 'Wt.', 'Śr.', 'Czw.', 'Pt.', 'Sob.'];
+            const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
+                               'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+
+            const futureEvents = allEvents.filter(event => event.date >= today);
+
+            if (futureEvents.length === 0) {
+                return '<p>Brak zaplanowanych odbiorów do końca roku.</p>';
+            }
+
+            let currentMonth = -1;
+            let currentYear = -1;
+
+            futureEvents.forEach(event => {
+                const d = event.date;
+
+                // Add month separator if month changed
+                if (d.getMonth() !== currentMonth || d.getFullYear() !== currentYear) {
+                    currentMonth = d.getMonth();
+                    currentYear = d.getFullYear();
+                    html += `<li style="text-align: center; color: #28a745; margin: 15px 0 10px; padding-bottom: 5px;">───── ${monthNames[currentMonth]} ${currentYear} ─────</li>`;
+                }
+
+                const dateString = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+                const weekdayString = weekdays[d.getDay()];
+                html += `<li style="margin: 5px 0;"><strong>${dateString} (${weekdayString})</strong>: ${event.name}</li>`;
+            });
+
+            html += '</ul>';
+            return html;
+        }
+        
+        function openModal() {
+            if (scheduleData) {
+                // Build modal title with location
+                let modalTitle = 'Pełny harmonogram';
+                if (selectedTown) {
+                    modalTitle += ': ' + selectedTown;
+                    const selectedStreet = localStorage.getItem('selectedStreet');
+                    if (selectedStreet && selectedStreet !== 'Pozostałe') {
+                        modalTitle += ', ul. ' + selectedStreet;
+                    }
+                }
+                document.getElementById('modal-title').textContent = modalTitle;
+                document.getElementById('full-schedule-body').innerHTML = generateFullScheduleHTML();
+                modal.style.display = 'block';
+            }
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        openModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (event) => {
+            if (event.target == modal) {
+                closeModal();
+            }
+        });
+
+        // --- Initialization ---
+
+        async function initializeApp() {
+            await loadDefinitions();
+            
+            selectedTown = localStorage.getItem('selectedTown');
+            const selectedStreet = localStorage.getItem('selectedStreet');
+
+            if (selectedTown) {
+                const scheduleId = getScheduleIdForLocation(selectedTown, selectedStreet);
+                scheduleData = await loadSchedule(scheduleId);
+            }
+            
+            renderPage();
+
+            // Set up recurring check to update display at midnight
+            setInterval(() => {
+                const now = new Date();
+                if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() < 2) {
+                    renderPage(); // Rerender on new day
+                }
+            }, 1000); 
+        }
+
+        initializeApp();
+    </script>
+</body>
+</html>
